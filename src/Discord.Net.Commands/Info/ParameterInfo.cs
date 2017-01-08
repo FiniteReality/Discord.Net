@@ -61,9 +61,12 @@ namespace Discord.Commands
             return PreconditionResult.FromSuccess();
         }
 
-        public async Task<TypeReaderResult> Parse(ICommandContext context, string input)
+        public async Task<TypeReaderResult> Parse(ICommandContext context, string input, IDependencyMap map = null)
         {
-            return await _reader.Read(context, input).ConfigureAwait(false);
+            if (map == null)
+                map = DependencyMap.Empty;
+
+            return await _reader.Read(context, input, map).ConfigureAwait(false);
         }
 
         public override string ToString() => Name;

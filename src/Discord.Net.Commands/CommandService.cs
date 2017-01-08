@@ -257,7 +257,7 @@ namespace Discord.Commands
                         continue;
                 }
 
-                var parseResult = await commands[i].ParseAsync(context, searchResult, preconditionResult).ConfigureAwait(false);
+                var parseResult = await commands[i].ParseAsync(context, searchResult, preconditionResult, dependencyMap).ConfigureAwait(false);
                 if (!parseResult.IsSuccess)
                 {
                     if (parseResult.Error == CommandError.MultipleMatches)
