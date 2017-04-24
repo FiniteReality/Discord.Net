@@ -1597,13 +1597,14 @@ namespace Discord.WebSocket
         }
         private async Task SyncGuildsAsync()
         {
-            var guildIds = Guilds.Where(x => !x.IsSynced).Select(x => x.Id).ToImmutableArray();
+            var guildIds = Guilds.Where(x => x != null && !x.IsSynced).Select(x => x.Id).ToImmutableArray();
             if (guildIds.Length > 0)
                 await ApiClient.SendGuildSyncAsync(guildIds).ConfigureAwait(false);
         }
 
         internal SocketGuild AddGuild(ExtendedGuild model, ClientState state)
         {
+            Task.Run(async () => await _gatewayLogger.DebugAsync($"Adding guild {model.Id} to cache"));
             var guild = SocketGuild.Create(this, state, model);
             state.AddGuild(guild);
             if (model.Large)
@@ -1612,6 +1613,7 @@ namespace Discord.WebSocket
         }
         internal SocketGuild RemoveGuild(ulong id)
         {
+            Task.Run(async () => await _gatewayLogger.DebugAsync($"Removing guild {id} from cache"));
             var guild = State.RemoveGuild(id);
             if (guild != null)
             {
