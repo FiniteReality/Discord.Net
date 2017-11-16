@@ -237,7 +237,7 @@ namespace Discord.Net.WebSockets
                 var t = OnClosed(new Exception("Connection timed out.", ex));
 
                 if (!t.IsCompletedSuccessfully)
-                    .ContinueWith(p => { Exception ignored = p.Exception; },
+                    t.ContinueWith(p => { Exception ignored = p.Exception; },
                         CancellationToken.None,
                         TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
                         TaskScheduler.Default);
@@ -249,7 +249,7 @@ namespace Discord.Net.WebSockets
                 var t = OnClosed(ex);
 
                 if (!t.IsCompletedSuccessfully)
-                    .ContinueWith(p => { Exception ignored = p.Exception; },
+                    t.ContinueWith(p => { Exception ignored = p.Exception; },
                         CancellationToken.None,
                         TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
                         TaskScheduler.Default);
