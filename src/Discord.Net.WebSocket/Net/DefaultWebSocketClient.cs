@@ -234,21 +234,25 @@ namespace Discord.Net.WebSockets
             }
             catch (Win32Exception ex) when (ex.HResult == HR_TIMEOUT)
             {
-                var _ = OnClosed(new Exception("Connection timed out.", ex))
-                    .ContinueWith(t =>
-                    {
-                        var observed = t.Exception;
-                    });
+                var t = OnClosed(new Exception("Connection timed out.", ex));
+
+                if (!t.IsCompletedSuccessfully)
+                    .ContinueWith(p => { Exception ignored = p.Exception; },
+                        CancellationToken.None,
+                        TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+                        TaskScheduler.Default);
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
             {
                 //This cannot be awaited otherwise we'll deadlock when DiscordApiClient waits for this task to complete.
-                var _ = OnClosed(ex)
-                    .ContinueWith(t =>
-                    {
-                        var observed = t.Exception;
-                    });
+                var t = OnClosed(ex);
+
+                if (!t.IsCompletedSuccessfully)
+                    .ContinueWith(p => { Exception ignored = p.Exception; },
+                        CancellationToken.None,
+                        TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+                        TaskScheduler.Default);
             }
         }
     }
